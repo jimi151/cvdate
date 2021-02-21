@@ -1,6 +1,6 @@
 [package]
 name = "cvdate"
-version = "1.1.2"
+version = "1.1.3"
 authors = ["jimi <wining151@qq.com>"]
 edition = "2018"
 description = "A tiny datetime and timestamp conversion tool."
@@ -8,7 +8,7 @@ license = "Apache-2.0"
 license-file = "LICENSE"
 readme = "README.md"
 homepage = "https://github.com/jimi151"
-documentation = "https://docs.rs/cvdate/1.1.2/cvdate/"
+documentation = "https://docs.rs/cvdate/1.1.3/cvdate/"
 repository = "https://github.com/jimi151/cvdate"
 keywords = ["date", "time","timestamp","timezone"]
 
