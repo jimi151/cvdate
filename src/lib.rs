@@ -234,7 +234,7 @@ impl CvDate{
                     std::process::Command::new("wmic")
                     .args(&["TIMEZONE","get","*","/value","|","find","/I","\"Description\""])
                     .output().expect("failed to execute process").stdout).unwrap();
-                let tm_arr = cbc.trim().splitn(&['C',':'][..]).collect::<Vec<_>>();
+                let tm_arr = cbc.trim().split(&['C',':'][..]).collect::<Vec<_>>();
                 tm_arr.get(1).unwrap().parse::<i64>().unwrap_or(0)
             } else {
                 let cbc = String::from_utf8(std::process::Command::new("date")
