@@ -1,0 +1,9 @@
+[package]
+name = "cvdate"
+version = "1.1.0"
+authors = ["winking151@qq.com <wining151@qq.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
