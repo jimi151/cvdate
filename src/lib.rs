@@ -229,10 +229,19 @@ impl CvDate{
     ///
     fn set_zone(&mut self, z: i64) {
         let cz = if z == 13 {
-            let cbc = String::from_utf8(std::process::Command::new("date")
-                .arg("-R").output().expect("failed to execute process").stdout).unwrap();
-            let tm_arr = cbc.trim().trim_end_matches('0').rsplitn(2,' ').collect::<Vec<_>>();
-            tm_arr.get(0).unwrap().parse::<i64>().unwrap_or(-1)
+            if cfg!(target_os = "windows") {
+                let cbc = String::from_utf8(
+                    std::process::Command::new("wmic")
+                    .args(&["TIMEZONE","get","*","/value","|","find","/I","\"Description\""])
+                    .output().expect("failed to execute process").stdout).unwrap();
+                let tm_arr = cbc.trim().splitn(&['C',':'][..]).collect::<Vec<_>>();
+                tm_arr.get(1).unwrap().parse::<i64>().unwrap_or(0)
+            } else {
+                let cbc = String::from_utf8(std::process::Command::new("date")
+                    .arg("-R").output().expect("failed to execute process").stdout).unwrap();
+                let tm_arr = cbc.trim().trim_end_matches('0').rsplitn(2,' ').collect::<Vec<_>>();
+                tm_arr.get(0).unwrap().parse::<i64>().unwrap_or(0)
+            }
         }else{
             z
         };
