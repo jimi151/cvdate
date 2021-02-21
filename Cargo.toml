@@ -7,6 +7,8 @@ description = "A tiny datetime and timestamp conversion tool."
 license = "Apache-2.0"
 license-file = "LICENSE"
 readme = "README.md"
+homepage = "https://github.com/jimi151"
+documentation = "https://docs.rs/cvdate/1.1.0/cvdate/"
 repository = "https://github.com/jimi151/cvdate"
 keywords = ["date", "time","timestamp","timezone"]
 
