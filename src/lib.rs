@@ -56,10 +56,13 @@ pub struct CvDate{
     tz: i64,
 }
 
+use std::sync::Once;
 const FOUR_YEAR_DAY: i64 = 1461;
 const DAY_SEC: i64 =  86400;
 const MONTH_ARR: [i64; 12] =      [31,28,31,30,31,30,31,31,30,31,30,31];
 const MONTH_LEAP_ARR: [i64; 12] = [31,29,31,30,31,30,31,31,30,31,30,31];
+static mut VAL: i64 = 0;
+static CACHE: Once = Once::new();
 
 impl CvDate{
     /// new CvDate with timestmp
@@ -229,18 +232,23 @@ impl CvDate{
     ///
     fn set_zone(&mut self, z: i64) {
         let cz = if z == 13 {
-            if cfg!(target_os = "windows") {
-                let cbc = String::from_utf8(
-                    std::process::Command::new("wmic")
-                    .args(&["TIMEZONE","get","*","/value","|","find","/I","\"Description\""])
-                    .output().expect("failed to execute process").stdout).unwrap();
-                let tm_arr = cbc.trim().split(&['C',':'][..]).collect::<Vec<_>>();
-                tm_arr.get(1).unwrap().parse::<i64>().unwrap_or(0)
-            } else {
-                let cbc = String::from_utf8(std::process::Command::new("date")
-                    .arg("-R").output().expect("failed to execute process").stdout).unwrap();
-                let tm_arr = cbc.trim().trim_end_matches('0').rsplitn(2,' ').collect::<Vec<_>>();
-                tm_arr.get(0).unwrap().parse::<i64>().unwrap_or(0)
+            unsafe {
+                CACHE.call_once(||{
+                    VAL = if cfg!(target_os = "windows") {
+                        let cbc = String::from_utf8(
+                            std::process::Command::new("wmic")
+                            .args(&["TIMEZONE","get","*","/value","|","find","/I","\"Description\""])
+                            .output().expect("failed to execute process").stdout).unwrap();
+                        let tm_arr = cbc.trim().split(&['C',':'][..]).collect::<Vec<_>>();
+                        tm_arr.get(1).unwrap().parse::<i64>().unwrap_or(0)
+                    } else {
+                        let cbc = String::from_utf8(std::process::Command::new("date")
+                            .arg("-R").output().expect("failed to execute process").stdout).unwrap();
+                        let tm_arr = cbc.trim().trim_end_matches('0').rsplitn(2,' ').collect::<Vec<_>>();
+                        tm_arr.get(0).unwrap().parse::<i64>().unwrap_or(0)
+                    }
+                });
+                VAL
             }
         }else{
             z
