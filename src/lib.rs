@@ -1,5 +1,8 @@
-//! A tiny datetime and timestamp tranlate tool.
-//! # from format str to create the time string
+//! # A tiny datetime and timestamp conversion tool by rust.
+//! 
+//! notice: Demos local timezone is east 8,other timezone need to change the assert_eq right.
+//!
+//! ## from format str to create the time string
 //! - format dis
 //!    - %Y : year
 //!    - %m : month
@@ -7,7 +10,7 @@
 //!    - %H : hour
 //!    - %M : min
 //!    - %S : sec
-//! # timestamp to datetime of CvDate
+//! ## timestamp to datetime of CvDate
 //! ```rust
 //! use cvdate::CvDate;
 //!
@@ -20,7 +23,7 @@
 //! assert_eq!(CvDate::is_leap(2021), false);
 //!
 //! ```
-//! # datetime string to datetime of CvDate
+//! ## datetime string to datetime of CvDate
 //! ```rust
 //! use cvdate::CvDate;
 //!
@@ -33,7 +36,7 @@
 //! assert_eq!(CvDate::is_leap(2020), true);
 //! assert_eq!(CvDate::is_leap(2021), false);
 //! ```
-//! # datetime from one zone to other
+//! ## datetime from one zone to other
 //! ```rust
 //! use cvdate::CvDate;
 //!
@@ -53,6 +56,7 @@ pub struct CvDate{
     hour: i64,
     min: i64,
     sec: i64,
+    week: i64,
     tz: i64,
 }
 
@@ -172,6 +176,7 @@ impl CvDate{
                 _ =>(),
             }
         });
+        self.week = Self::week(self.tmstp);
     }
 
     fn build(&mut self) {
@@ -212,6 +217,35 @@ impl CvDate{
                 break;
             }
         }
+        self.week = Self::week(self.tmstp);
+    }
+
+    /// get week from timestamp
+    /// ```rust
+    /// use cvdate::CvDate;
+    ///
+    /// assert_eq!(CvDate::week(1613958868), 1);
+    /// ```
+    pub fn week(stp: i64) -> i64 {
+        let w = stp.checked_div(DAY_SEC).unwrap_or(0)
+                .checked_rem(7).unwrap_or(0)
+                .checked_add(4).unwrap_or(0);
+        if w > 7 { 
+            w.checked_sub(7).unwrap_or(0)
+        }else{ 
+            w 
+        }
+    }
+
+    /// get cur week from CvDate
+    /// ```rust
+    /// use cvdate::CvDate;
+    ///
+    /// let x = CvDate::new_with_tz(1613958868,8);
+    /// assert_eq!(x.get_week(), 1);
+    /// ```
+    pub fn get_week(&self) -> i64 {
+        self.week
     }
 
     /// from datetime str to timestamp

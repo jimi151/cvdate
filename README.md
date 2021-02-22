@@ -1,4 +1,7 @@
-# A tiny datetime and timestamp tranlate tool.
+# A tiny datetime and timestamp conversion tool by rust.
+
+notice: Demos local timezone is east 8,other timezone need to change the assert_eq right.
+
 ## from format str to create the time string
 - format dis
    - %Y : year
