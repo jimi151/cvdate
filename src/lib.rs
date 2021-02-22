@@ -1,7 +1,5 @@
 //! # A tiny datetime and timestamp conversion tool by rust.
 //! 
-//! notice: Demos local timezone is east 8,other timezone need to change the assert_eq right.
-//!
 //! ## from format str to create the time string
 //! - format dis
 //!    - %Y : year
@@ -14,10 +12,12 @@
 //! ```rust
 //! use cvdate::CvDate;
 //!
-//! let d = CvDate::new(1582939726);
+//! //let d = CvDate::new(1582939726);//if only local timezone
+//! let d = CvDate::new_with_tz(1582939726, 8);
 //! assert_eq!(d.get_date(), "2020-02-29");
 //! assert_eq!(d.get_time(), "09:28:46");
 //! assert_eq!(d.get_date_time(), "2020-02-29 09:28:46");
+//! assert_eq!(d.get_week(), 6);
 //! assert_eq!(d.format("%d/%m/%Y %H:%M"), "29/02/2020 09:28");
 //! assert_eq!(CvDate::is_leap(2020), true);
 //! assert_eq!(CvDate::is_leap(2021), false);
@@ -27,11 +27,13 @@
 //! ```rust
 //! use cvdate::CvDate;
 //!
-//! let d = CvDate::new_with_str("%Y/%m-%d %H:%M:%S","2020-07-29 15:23:27");
+//! //let d = CvDate::new_with_str("%Y/%m-%d %H:%M:%S","2020-07-29 15:23:27");//if only local timezone
+//! let d = CvDate::new_with_str_tz("%Y/%m-%d %H:%M:%S","2020-07-29 15:23:27", 8);
 //! assert_eq!(d.get_timestamp(), 1596007407);
 //! assert_eq!(d.get_date(), "2020-07-29");
 //! assert_eq!(d.get_time(), "15:23:27");
 //! assert_eq!(d.get_date_time(), "2020-07-29 15:23:27");
+//! assert_eq!(d.get_week(), 3);
 //! assert_eq!(d.format("%d/%m/%Y %H:%M"), "29/07/2020 15:23");
 //! assert_eq!(CvDate::is_leap(2020), true);
 //! assert_eq!(CvDate::is_leap(2021), false);
@@ -46,6 +48,14 @@
 //! assert_eq!(CvDate::new_with_tz(x.get_timestamp(), 9).get_date_time(), "2020-02-29 06:23:27");
 //! //timezone west -10
 //! assert_eq!(CvDate::new_with_tz(x.get_timestamp(), -10).get_date_time(), "2020-02-28 11:23:27");
+//! ```
+//! ## from year and month to get clender
+//! ```rust
+//! use cvdate::CvDate;
+//!
+//! assert_eq!(CvDate::get_clender(2020,2),
+//! [(1,6),(2,7),(3,1),(4,2),(5,3),(6,4),(7,5),(8,6),(9,7),(10,1),(11,2),(12,3),(13,4),(14,5),(15,6),(16,7)
+//! ,(17,1),(18,2),(19,3),(20,4),(21,5),(22,6),(23,7),(24,1),(25,2),(26,3),(27,4),(28,5),(29,6)]);
 //! ```
 #[derive(Debug,Default)]
 pub struct CvDate{
@@ -124,6 +134,31 @@ impl CvDate{
         t.set_zone(tz);
         t.build_str(fm, dt);
         t
+    }
+
+    /// get clender return vec tuple  (day,week)
+    /// ```rust
+    /// use cvdate::CvDate;
+    ///
+    /// assert_eq!(CvDate::get_clender(2020,2),
+    /// [(1,6),(2,7),(3,1),(4,2),(5,3),(6,4),(7,5),(8,6),(9,7),(10,1),(11,2),(12,3),(13,4),(14,5),(15,6),(16,7)
+    /// ,(17,1),(18,2),(19,3),(20,4),(21,5),(22,6),(23,7),(24,1),(25,2),(26,3),(27,4),(28,5),(29,6)]);
+    /// ```
+    pub fn get_clender(year: i64, month: i64) -> Vec<(i64, i64)> {
+        let d = CvDate::new_with_str_tz("%Y-%m",&format!("{}-{}", year, month), 0);
+        let mut wk = d.get_week();
+        (1..=(if CvDate::is_leap(year){
+            *MONTH_LEAP_ARR.get(month.checked_sub(1).unwrap_or(1) as usize).unwrap()
+        }else{
+            *MONTH_ARR.get(month.checked_sub(1).unwrap_or(1) as usize).unwrap()
+        })).map(|d|{
+            let dt = (d,wk);
+            wk += 1;
+            if wk > 7 {
+                wk -= 7
+            }
+            dt
+        }).collect::<Vec<(_,_)>>()
     }
        
     fn build_str(&mut self, fm: &str, dt: &str) {
