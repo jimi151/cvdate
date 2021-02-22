@@ -9,7 +9,7 @@ readme = "README.md"
 homepage = "https://github.com/jimi151"
 documentation = "https://docs.rs/cvdate/1.1.7/cvdate/"
 repository = "https://github.com/jimi151/cvdate"
-keywords = ["date", "time","timestamp","week","timezone","clender"]
+keywords = ["datetime","timestamp","week","timezone","clender"]
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
