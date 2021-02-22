@@ -176,7 +176,7 @@ impl CvDate{
                 _ =>(),
             }
         });
-        self.week = Self::week(self.tmstp);
+        self.week = self.week(self.tmstp);
     }
 
     fn build(&mut self) {
@@ -217,17 +217,19 @@ impl CvDate{
                 break;
             }
         }
-        self.week = Self::week(self.tmstp);
+        self.week = self.week(self.tmstp);
     }
 
     /// get week from timestamp
     /// ```rust
     /// use cvdate::CvDate;
     ///
-    /// assert_eq!(CvDate::week(1613958868), 1);
+    /// let x = CvDate::new_with_tz(1613958868, 8);
+    /// assert_eq!(x.get_week(), 1);
     /// ```
-    pub fn week(stp: i64) -> i64 {
-        let w = stp.checked_div(DAY_SEC).unwrap_or(0)
+    fn week(&self, stp: i64) -> i64 {
+        let w = stp.checked_add(3600_i64.checked_mul(self.tz).unwrap_or(0)).unwrap_or(0)
+                .checked_div(DAY_SEC).unwrap_or(0)
                 .checked_rem(7).unwrap_or(0)
                 .checked_add(4).unwrap_or(0);
         if w > 7 { 
@@ -241,8 +243,8 @@ impl CvDate{
     /// ```rust
     /// use cvdate::CvDate;
     ///
-    /// let x = CvDate::new_with_tz(1613958868,8);
-    /// assert_eq!(x.get_week(), 1);
+    /// let x = CvDate::new_with_tz(1613836800,8);
+    /// assert_eq!(x.get_week(), 7);
     /// ```
     pub fn get_week(&self) -> i64 {
         self.week
