@@ -9,6 +9,22 @@
    - %M : min
    - %S : sec
 
+## get now time with timezone
+```rust
+use cvdate::CvDate;
+
+//local timezone
+let x = CvDate::now().format("%Y-%m-%d %H:%M:%S"); 
+println!("{}",x); //return now time string: "2021-02-28 16:51:29"
+let x = CvDate::now().get_timestamp(); 
+println!("{}",x); //return now timestamp: 1614502462
+//get time with timezone
+let x = CvDate::now_with_tz(8).format("%Y-%m-%d %H:%M:%S"); 
+println!("{}",x); //return now time string: "2021-02-28 16:51:29"
+let x = CvDate::now_with_tz(8).get_timestamp(); 
+println!("{}",x); //return now timestamp: 1614502462
+```
+
 ## timestamp to datetime of CvDate
 ```rust
 use cvdate::CvDate;

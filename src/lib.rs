@@ -8,6 +8,21 @@
 //!    - %H : hour
 //!    - %M : min
 //!    - %S : sec
+//! ## get now time with timezone
+//! ```rust
+//! use cvdate::CvDate;
+//! 
+//! //local timezone
+//! let x = CvDate::now().format("%Y-%m-%d %H:%M:%S"); 
+//! println!("{}",x); //return now time string: "2021-02-28 16:51:29"
+//! let x = CvDate::now().get_timestamp(); 
+//! println!("{}",x); //return now timestamp: 1614502462
+//! //get time with timezone
+//! let x = CvDate::now_with_tz(8).format("%Y-%m-%d %H:%M:%S"); 
+//! println!("{}",x); //return now time string: "2021-02-28 16:51:29"
+//! let x = CvDate::now_with_tz(8).get_timestamp(); 
+//! println!("{}",x); //return now timestamp: 1614502462
+//! ```
 //! ## timestamp to datetime of CvDate
 //! ```rust
 //! use cvdate::CvDate;
@@ -89,6 +104,44 @@ impl CvDate{
         let mut t =Self::default();
         t.set_timestamp(tmstp);
         t.set_zone(13);
+        t.build();
+        t
+    }
+
+    /// get now time CvDate with local timezone
+    /// ```rust
+    /// use cvdate::CvDate;
+    /// let x = CvDate::now().format("%Y-%m-%d %H:%M:%S"); 
+    /// println!("{}",x); //return now time string: "2021-02-28 16:51:29"
+    /// let x = CvDate::now().get_timestamp(); 
+    /// println!("{}",x); //return now timestamp: 1614502462
+    /// ```
+    pub fn now() -> Self {
+        use std::time::SystemTime;
+        let mut t =Self::default();
+        if let Ok(stmp) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
+            t.set_timestamp(stmp.as_secs() as i64);
+        }
+        t.set_zone(13);
+        t.build();
+        t
+    }
+
+    /// get now time CvDate with local timezone
+    /// ```rust
+    /// use cvdate::CvDate;
+    /// let x = CvDate::now_with_tz(8).format("%Y-%m-%d %H:%M:%S"); 
+    /// println!("{}",x); //return now time string: "2021-02-28 16:51:29"
+    /// let x = CvDate::now_with_tz(8).get_timestamp(); 
+    /// println!("{}",x); //return now timestamp: 1614502462
+    /// ```
+    pub fn now_with_tz(tz: i64) -> Self {
+        use std::time::SystemTime;
+        let mut t =Self::default();
+        if let Ok(stmp) = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
+            t.set_timestamp(stmp.as_secs() as i64);
+        }
+        t.set_zone(tz);
         t.build();
         t
     }
