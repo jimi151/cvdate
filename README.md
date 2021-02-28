@@ -1,5 +1,11 @@
 # A tiny datetime  week clender and timestamp conversion tool by rust.
 
+Add the following line to your Cargo.toml file:
+```rust
+[dependencies]
+cvdate = "1.1.8"
+```
+
 ## from format str to create the time string
 - format dis
    - %Y : year
